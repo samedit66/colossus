@@ -2,11 +2,12 @@ import logging
 import re
 from smtplib import SMTPException
 
-import html2text
 from django.contrib.sites.shortcuts import get_current_site
 from django.core.mail import EmailMultiAlternatives
 from django.utils import timezone
 from django.utils.translation import gettext as _
+
+import html2text
 
 from colossus.apps.campaigns.constants import CampaignStatus
 from colossus.apps.subscribers.constants import ActivityTypes
