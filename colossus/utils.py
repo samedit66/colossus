@@ -3,12 +3,16 @@ import uuid
 from typing import Optional
 
 from django.conf import settings
-from django.conf.global_settings import EMAIL_HOST_USER, EMAIL_HOST_PASSWORD, EMAIL_HOST, EMAIL_PORT, EMAIL_USE_TLS
+from django.conf.global_settings import (
+    EMAIL_HOST, EMAIL_HOST_PASSWORD, EMAIL_HOST_USER, EMAIL_PORT,
+    EMAIL_USE_TLS,
+)
 from django.contrib.gis.geoip2 import GeoIP2
 from django.contrib.sites.shortcuts import get_current_site
 from django.core.mail import get_connection
 from django.http import HttpRequest
 from django.urls import reverse
+
 from geoip2.errors import AddressNotFoundError
 
 from colossus.apps.core.models import City, Country
