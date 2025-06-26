@@ -3,7 +3,7 @@ import uuid
 from typing import Optional
 
 from django.conf import settings
-from django.conf.global_settings import (
+from colossus.settings import (
     EMAIL_HOST, EMAIL_HOST_PASSWORD, EMAIL_HOST_USER, EMAIL_PORT,
     EMAIL_USE_TLS,
 )
