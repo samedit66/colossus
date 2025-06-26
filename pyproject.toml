@@ -3,7 +3,7 @@ name = "colossus"
 version = "0.1.0"
 description = "Add your description here"
 readme = "README.md"
-requires-python = ">=3.8"
+requires-python = ">=3.9"
 dependencies = [
     "beautifulsoup4==4.7.1",
     "celery==4.2.1",
