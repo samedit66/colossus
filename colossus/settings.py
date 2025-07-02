@@ -1,5 +1,6 @@
 import os
 import string
+from pathlib import Path
 
 from django.contrib.messages import constants as messages_constants
 
@@ -7,7 +8,7 @@ import dj_database_url
 from celery.schedules import crontab
 from decouple import Csv, config
 
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+BASE_DIR = Path(__file__).resolve().parent.parent
 
 
 # ==============================================================================
@@ -72,6 +73,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'colossus.apps.accounts.middleware.UserTimezoneMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
 ]
 
 
@@ -128,11 +130,13 @@ LOCALE_PATHS = (
 
 STATIC_URL = '/static/'
 
-STATIC_ROOT = os.path.join(os.path.dirname(BASE_DIR), 'static')
+STATIC_ROOT = BASE_DIR / 'staticfiles'
 
 STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, 'colossus/static'),
+    BASE_DIR / 'colossus' / 'static',
 ]
+
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 
 # ==============================================================================
@@ -234,6 +238,9 @@ CELERY_BEAT_SCHEDULE = {
 
 CELERY_TASK_ALWAYS_EAGER = config('CELERY_TASK_ALWAYS_EAGER', default=True, cast=bool)
 
+CELERY_BROKER_TRANSPORT_OPTIONS = {
+    'heartbeat': 300,
+}
 
 # ==============================================================================
 # FIRST-PARTY APPS SETTINGS

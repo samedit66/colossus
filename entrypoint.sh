@@ -13,5 +13,8 @@ else
   echo "Already initialized; skipping migrations."
 fi
 
+echo "Collecting static files"
+python manage.py collectstatic --noinput
+
 # Hand off to your CMD (e.g. gunicorn)
 exec "$@"

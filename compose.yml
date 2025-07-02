@@ -1,13 +1,23 @@
 services:
+  rabbitmq:
+    image: rabbitmq:3-management
+    hostname: rabbitmq
+    ports:
+      - "5672:5672"    # AMQP
+      - "15672:15672"  # Management UI
+    env_file: ".env"
+    healthcheck:
+      test: ["CMD", "rabbitmqctl", "status"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
   web:
-    # Build the image from the Dockerfile in the current directory
     build: .
 
-    # Host the application on port 8000
     ports:
       - "8000:8000"
 
-    # Database
     volumes:
       - ./data:/app/data
 
@@ -29,4 +39,58 @@ services:
         # Rebuild the image if dependencies change by checking uv.lock
         - action: rebuild
           path: ./uv.lock
-          
+    
+    depends_on:
+      - rabbitmq
+
+  worker:
+    # Build the same application image
+    build: .
+
+    # Command for Celery worker
+    command: celery worker --app=colossus --loglevel=INFO
+
+    # Share environment with the web service
+    env_file: ".env"
+
+    # Ensure the web service is available before starting
+    depends_on:
+      - rabbitmq
+      - web
+
+    develop:
+      watch:
+        - action: sync
+          path: .
+          target: /app
+          ignore:
+            - .venv/
+
+        - action: rebuild
+          path: ./uv.lock
+
+  beat:
+    # Build the same application image
+    build: .
+
+    # Command for Celery beat (periodic tasks scheduler)
+    command: celery beat --app=colossus --loglevel=INFO
+
+    # Share environment with the web service
+    env_file: ".env"
+
+    # Ensure the web service is available before starting
+    depends_on:
+      - rabbitmq
+      - web
+
+    develop:
+      watch:
+        - action: sync
+          path: .
+          target: /app
+          ignore:
+            - .venv/
+
+        - action: rebuild
+          path: ./uv.lock
