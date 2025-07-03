@@ -1,20 +1,23 @@
 #!/usr/bin/env sh
 set -e
 
-# Use a persistent volume for your marker
-MARKER="/app/data/.initialized"
+# Ensure data dir exists
+mkdir -p /app/data
+chmod -R 777 /app/data
 
+# Marker to run migrations only once per volume
+MARKER="/app/data/.initialized"
 if [ ! -f "$MARKER" ]; then
   echo "First startup: running migrations"
   python manage.py migrate --noinput
-  echo "Migrations complete, creating marker at $MARKER"
   touch "$MARKER"
 else
   echo "Already initialized; skipping migrations."
 fi
 
+# Collect static assets
 echo "Collecting static files"
 python manage.py collectstatic --noinput
 
-# Hand off to your CMD (e.g. gunicorn)
+# Execute default CMD
 exec "$@"

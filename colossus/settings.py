@@ -1,6 +1,7 @@
 import os
 import string
 from pathlib import Path
+import urllib
 
 from django.contrib.messages import constants as messages_constants
 
@@ -225,6 +226,10 @@ CRISPY_TEMPLATE_PACK = 'bootstrap4'
 
 CELERY_BROKER_URL = config('CELERY_BROKER_URL', default='amqp://localhost')
 
+CELERY_BROKER_HEARTBEAT = 3600
+
+CELERY_BROKER_HEARTBEAT_CHECKRATE = 2
+
 CELERY_BEAT_SCHEDULE = {
     'send-scheduled-campaigns': {
         'task': 'colossus.apps.campaigns.tasks.send_scheduled_campaigns_task',
@@ -237,10 +242,6 @@ CELERY_BEAT_SCHEDULE = {
 }
 
 CELERY_TASK_ALWAYS_EAGER = config('CELERY_TASK_ALWAYS_EAGER', default=True, cast=bool)
-
-CELERY_BROKER_TRANSPORT_OPTIONS = {
-    'heartbeat': 300,
-}
 
 # ==============================================================================
 # FIRST-PARTY APPS SETTINGS

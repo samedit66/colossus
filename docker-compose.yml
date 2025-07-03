@@ -1,0 +1,51 @@
+services:
+  rabbitmq:
+    image: rabbitmq:3-management
+    hostname: rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    env_file: .env
+    healthcheck:
+      test: ["CMD", "rabbitmqctl", "status"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    env_file: .env
+    environment:
+      # По умолчанию: sqlite
+      DATABASE_URL: ${DATABASE_URL:-sqlite:///app/data/db.sqlite3}
+    volumes:
+      - data:/app/data
+    ports:
+      - "8000:8000"
+
+  worker:
+    build:
+      context: .
+    env_file: .env
+    volumes:
+      - data:/app/data
+    command: celery worker --app=colossus --loglevel=INFO
+    depends_on:
+      - rabbitmq
+      - web
+
+  beat:
+    build:
+      context: .
+    env_file: .env
+    volumes:
+      - data:/app/data
+    command: celery beat --app=colossus --loglevel=INFO
+    depends_on:
+      - rabbitmq
+      - web
+
+volumes:
+  data: {}    # том для SQLite-файла
