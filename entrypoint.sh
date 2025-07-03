@@ -1,23 +1,28 @@
 #!/usr/bin/env sh
 set -e
 
-# Ensure data dir exists
+# Папка для sqlite
 mkdir -p /app/data
 chmod -R 777 /app/data
 
-# Marker to run migrations only once per volume
-MARKER="/app/data/.initialized"
-if [ ! -f "$MARKER" ]; then
-  echo "First startup: running migrations"
-  python manage.py migrate --noinput
-  touch "$MARKER"
+# Определяем, используем ли SQLite
+if echo "$DATABASE_URL" | grep -q '^sqlite://'; then
+  MARKER="/app/data/.initialized_sqlite"
+  if [ ! -f "$MARKER" ]; then
+    echo "First sqlite startup: running migrations"
+    python manage.py migrate --noinput
+    touch "$MARKER"
+  else
+    echo "SQLite already initialized; skipping migrations."
+  fi
 else
-  echo "Already initialized; skipping migrations."
+  echo "Non-sqlite DB detected; running migrations"
+  python manage.py migrate --noinput
 fi
 
-# Collect static assets
+# Collect static files
 echo "Collecting static files"
 python manage.py collectstatic --noinput
 
-# Execute default CMD
+# Передаём управление приложению
 exec "$@"

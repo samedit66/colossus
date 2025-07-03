@@ -22,10 +22,16 @@ services:
       - postgres
 
   worker:
+    environment:
+      # Перекрываем DATABASE_URL на Postgres
+      DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
     depends_on:
       - postgres
 
   beat:
+    environment:
+      # Перекрываем DATABASE_URL на Postgres
+      DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
     depends_on:
       - postgres
 
