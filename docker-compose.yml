@@ -17,11 +17,8 @@ services:
       context: .
       dockerfile: Dockerfile
     env_file: .env
-    environment:
-      # По умолчанию: sqlite
-      DATABASE_URL: ${DATABASE_URL:-sqlite:///app/data/db.sqlite3}
     volumes:
-      - data:/app/data
+      - ./data:/app/data
     ports:
       - "8000:8000"
 
@@ -30,7 +27,8 @@ services:
       context: .
     env_file: .env
     volumes:
-      - data:/app/data
+      - ./data:/app/data
+    entrypoint: []
     command: celery worker --app=colossus --loglevel=INFO
     depends_on:
       - rabbitmq
@@ -41,11 +39,9 @@ services:
       context: .
     env_file: .env
     volumes:
-      - data:/app/data
+      - ./data:/app/data
+    entrypoint: []
     command: celery beat --app=colossus --loglevel=INFO
     depends_on:
       - rabbitmq
       - web
-
-volumes:
-  data: {}    # том для SQLite-файла
