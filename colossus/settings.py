@@ -252,3 +252,12 @@ COLOSSUS_HTTPS_ONLY = config('COLOSSUS_HTTPS_ONLY', default=False, cast=bool)
 MAILGUN_API_KEY = config('MAILGUN_API_KEY', default='')
 
 MAILGUN_API_BASE_URL = config('MAILGUN_API_BASE_URL', default='')
+
+
+# ==============================================================================
+# ADMIN ACCOUNT SETTINGS
+# ==============================================================================
+
+ADMIN_LOGIN = config('ADMIN_LOGIN', default=None)
+ADMIN_PASS = config('ADMIN_PASS', default=None)
+ADMIN_EMAIL = config('ADMIN_EMAIL', default='')

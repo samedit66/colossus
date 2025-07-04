@@ -1,28 +1,21 @@
 #!/usr/bin/env sh
 set -e
 
-# Папка для sqlite
+# Ensure the application data directory exists and is writable
 mkdir -p /app/data
-chmod -R 777 /app/data
+chmod 0777 /app/data
 
-# Определяем, используем ли SQLite
-if echo "$DATABASE_URL" | grep -q '^sqlite://'; then
-  MARKER="/app/data/.initialized_sqlite"
-  if [ ! -f "$MARKER" ]; then
-    echo "First sqlite startup: running migrations"
-    python manage.py migrate --noinput
-    touch "$MARKER"
-  else
-    echo "SQLite already initialized; skipping migrations."
-  fi
-else
-  echo "Non-sqlite DB detected; running migrations"
-  python manage.py migrate --noinput
-fi
+# Always run all pending Django migrations
+echo "Running database migrations..."
+python manage.py migrate --noinput
 
-# Collect static files
-echo "Collecting static files"
+# Create or update the admin user
+echo "Creating or updating admin user..."
+python manage.py create_admin
+
+# Collect all static assets
+echo "Collecting static files..."
 python manage.py collectstatic --noinput
 
-# Передаём управление приложению
+# Hand off control to the main application process
 exec "$@"
