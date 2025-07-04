@@ -122,6 +122,7 @@ docker compose -f docker-compose.yml -f docker-compose.postgres.yml down --volum
 ```
 http://127.0.0.1:8000/setup/
 ```
+You can automate admin creation by defining the following variables in your .env file: ADMIN_LOGIN, ADMIN_PASS, and ADMIN_EMAIL.
 
 > **Note:** For campaign scheduling to work, Celery and a message broker (RabbitMQ) are required. They are already configured in docker-compose.
 
