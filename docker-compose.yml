@@ -21,6 +21,8 @@ services:
       - ./data:/app/data
     ports:
       - "8000:8000"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
 
   worker:
     build:
@@ -33,6 +35,8 @@ services:
     depends_on:
       - rabbitmq
       - web
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
 
   beat:
     build:
@@ -45,3 +49,5 @@ services:
     depends_on:
       - rabbitmq
       - web
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
