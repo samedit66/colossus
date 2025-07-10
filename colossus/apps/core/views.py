@@ -44,19 +44,25 @@ def dashboard(request):
     })
 
 
-def setup(request):
-    if User.objects.exists() or MailingList.objects.exists():
-        return redirect('dashboard')
-
+def __fix_site_if_needed(request):
     site = Site.objects.get(pk=django_settings.SITE_ID)
     if site.domain == 'example.com':
-        site.name = 'Colossus'
-        site.domain = request.META.get('HTTP_HOST')
-        site.save()
+        host = request.META.get('HTTP_HOST')
+        if host:
+            site.name = 'Colossus'
+            site.domain = host
+            site.save()
+
+
+def setup(request):
+    __fix_site_if_needed(request)
+    if User.objects.exists() or MailingList.objects.exists():
+        return redirect('dashboard')
     return redirect('setup_account')
 
 
 def setup_account(request):
+    __fix_site_if_needed(request)
     if User.objects.exists() or MailingList.objects.exists():
         return redirect('dashboard')
 
